@@ -10,6 +10,7 @@ class Paysera extends PaymentModule
         $this->author = 'Šarūnas Jonušas';
         $this->version = '1.0.0';
         $this->compatibility = ['min' => '1.7.0.0', 'max' => _PS_VERSION_];
+        $this->controllers = ['redirect', 'callback', 'accept', 'cancel'];
 
         parent::__construct();
 
@@ -33,11 +34,33 @@ class Paysera extends PaymentModule
     public function install()
     {
         $hooks = [
-            'hookPaymentOptions',
-            'hookPaymentReturn',
+            'paymentOptions',
+            'paymentReturn',
         ];
 
+        $defaultConfiguration = $this->getDefaultConfiguration();
+
+        foreach ($defaultConfiguration as $name => $value) {
+            Configuration::updateValue($name, $value);
+        }
+
         return parent::install() && $this->registerHook($hooks);
+    }
+
+    /**
+     * Uninstall module
+     *
+     * @return bool
+     */
+    public function uninstall()
+    {
+        $defaultConfiguration = $this->getDefaultConfiguration();
+
+        foreach (array_keys($defaultConfiguration) as $name) {
+            Configuration::deleteByName($name);
+        }
+
+        return parent::uninstall();
     }
 
     /**
@@ -50,11 +73,47 @@ class Paysera extends PaymentModule
         $tabs = [
             [
                 'name' => $this->l('Paysera'),
-                'class_name' => 'AdminPayseConfiguration',
+                'class_name' => 'AdminPayseraConfiguration',
                 'icon' => 'payment',
             ],
         ];
 
         return $tabs;
+    }
+
+    /**
+     * Get module payment options
+     *
+     * @param array $params
+     *
+     * @return array|PaymentOption[]
+     */
+    public function hookPaymentOptions(array $params)
+    {
+        $payseraOption = new PaymentOption();
+        $payseraOption->setCallToActionText($this->l('Pay by Paysera'));
+        $payseraOption->setAction($this->context->link->getModuleLink($this->name, 'redirect'));
+        $payseraOption->setAdditionalInformation($this->l('Order process will be faster'));
+
+        return [$payseraOption];
+    }
+
+    public function hookPaymentReturn(array $params)
+    {
+
+    }
+
+    /**
+     * Module default configuration
+     *
+     * @return array
+     */
+    protected function getDefaultConfiguration()
+    {
+        return [
+            'PAYSERA_PROJECT_ID' => '',
+            'PAYSERA_PROJECT_PASSWORD' => '',
+            'PAYSERA_TESTING_MODE' => 1,
+        ];
     }
 }

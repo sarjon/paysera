@@ -1,0 +1,11 @@
+{
+    "name": "sarjon/paysera",
+    "type": "prestashop-module",
+    "authors": [
+        {
+            "name": "Šarūnas Jonušas",
+            "email": "jonusas.sarunas@gmail.com"
+        }
+    ],
+    "require": {}
+}
