@@ -13,6 +13,48 @@ class Paysera extends PaymentModule
 
         parent::__construct();
 
-        $this->displayName = $this->trans('Paysera', [], 'Modules.Paysera.Admin');
+        $this->displayName = $this->l('Paysera');
+        $this->description = $this->l('Accept payments by Paysera system');
+    }
+
+    /**
+     * Redirect to configuration controller
+     */
+    public function getContent()
+    {
+        Tools::redirectAdmin($this->context->link->getAdminLink('AdminPayseraConfiguration'));
+    }
+
+    /**
+     * Install module
+     *
+     * @return bool
+     */
+    public function install()
+    {
+        $hooks = [
+            'hookPaymentOptions',
+            'hookPaymentReturn',
+        ];
+
+        return parent::install() && $this->registerHook($hooks);
+    }
+
+    /**
+     * Module tabs
+     *
+     * @return array
+     */
+    public function getTabs()
+    {
+        $tabs = [
+            [
+                'name' => $this->l('Paysera'),
+                'class_name' => 'AdminPayseConfiguration',
+                'icon' => 'payment',
+            ],
+        ];
+
+        return $tabs;
     }
 }
