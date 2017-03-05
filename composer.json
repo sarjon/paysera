@@ -7,5 +7,9 @@
             "email": "jonusas.sarunas@gmail.com"
         }
     ],
-    "require": {}
+    "autoload": {
+        "classmap": [
+            "lib/"
+        ]
+    }
 }

@@ -10,12 +10,14 @@ class Paysera extends PaymentModule
         $this->author = 'Šarūnas Jonušas';
         $this->version = '1.0.0';
         $this->compatibility = ['min' => '1.7.0.0', 'max' => _PS_VERSION_];
-        $this->controllers = ['redirect', 'callback', 'accept', 'cancel'];
+        $this->controllers = ['redirect'];
 
         parent::__construct();
 
         $this->displayName = $this->l('Paysera');
         $this->description = $this->l('Accept payments by Paysera system');
+
+        $this->autoload();
     }
 
     /**
@@ -92,7 +94,7 @@ class Paysera extends PaymentModule
     {
         $payseraOption = new PaymentOption();
         $payseraOption->setCallToActionText($this->l('Pay by Paysera'));
-        $payseraOption->setAction($this->context->link->getModuleLink($this->name, 'redirect'));
+        $payseraOption->setAction($this->context->link->getModuleLink($this->name, 'payment'));
         $payseraOption->setAdditionalInformation($this->l('Order process will be faster'));
 
         return [$payseraOption];
@@ -100,7 +102,7 @@ class Paysera extends PaymentModule
 
     public function hookPaymentReturn(array $params)
     {
-
+        //@todo: implement
     }
 
     /**
@@ -115,5 +117,13 @@ class Paysera extends PaymentModule
             'PAYSERA_PROJECT_PASSWORD' => '',
             'PAYSERA_TESTING_MODE' => 1,
         ];
+    }
+
+    /**
+     * Require autoloader
+     */
+    private function autoload()
+    {
+        require_once __DIR__.'/vendor/autoload.php';
     }
 }
