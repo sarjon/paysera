@@ -53,11 +53,37 @@ class AdminPayseraConfigurationController extends ModuleAdminController
                         'cast' => 'intval',
                         'class' => 'fixed-width-xxl',
                     ],
+                    'PAYSERA_DEFAULT_COUNTRY' => [
+                        'title' => $this->l('Default payment country'),
+                        'type' => 'select',
+                        'class' => 'fixed-width-xxl',
+                        'list' => $this->getCountries(),
+                        'identifier' => 'id',
+                    ],
                 ],
                 'submit' => [
                     'title' => $this->l('Save'),
                 ],
             ],
         ];
+    }
+
+    private function getCountries()
+    {
+        $countries = [];
+        $projectID = (string) Configuration::get('PAYSERA_PROJECT_ID');
+
+        $methods = WebToPay::getPaymentMethodList($projectID)
+            ->setDefaultLanguage($this->context->language->iso_code)
+            ->getCountries();
+
+        foreach ($methods as $method) {
+            $countries[] = [
+                'id' => $method->getCode(),
+                'name' => $method->getTitle(),
+            ];
+        }
+
+        return $countries;
     }
 }
