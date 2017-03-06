@@ -9,8 +9,9 @@ class Paysera extends PaymentModule
         $this->name = 'paysera';
         $this->author = 'Šarūnas Jonušas';
         $this->version = '1.0.0';
+        $this->tab = 'payments_gateways';
         $this->compatibility = ['min' => '1.7.0.0', 'max' => _PS_VERSION_];
-        $this->controllers = ['redirect'];
+        $this->controllers = ['redirect', 'validation', 'accept', 'cancel'];
 
         parent::__construct();
 
@@ -46,7 +47,7 @@ class Paysera extends PaymentModule
             Configuration::updateValue($name, $value);
         }
 
-        return parent::install() && $this->registerHook($hooks);
+        return parent::install() && $this->registerHook($hooks) && $this->installOrderState();
     }
 
     /**
@@ -62,7 +63,7 @@ class Paysera extends PaymentModule
             Configuration::deleteByName($name);
         }
 
-        return parent::uninstall();
+        return $this->uninstallOrderState() && parent::uninstall();
     }
 
     /**
@@ -76,7 +77,7 @@ class Paysera extends PaymentModule
             [
                 'name' => $this->l('Paysera'),
                 'class_name' => 'AdminPayseraConfiguration',
-                'icon' => 'payment',
+                'ParentClassName' => 'AdminParentPayment',
             ],
         ];
 
@@ -86,16 +87,37 @@ class Paysera extends PaymentModule
     /**
      * Get module payment options
      *
-     * @param array $params
-     *
      * @return array|PaymentOption[]
      */
-    public function hookPaymentOptions(array $params)
+    public function hookPaymentOptions()
     {
         $payseraOption = new PaymentOption();
         $payseraOption->setCallToActionText($this->l('Pay by Paysera'));
-        $payseraOption->setAction($this->context->link->getModuleLink($this->name, 'payment'));
-        $payseraOption->setAdditionalInformation($this->l('Order process will be faster'));
+        $payseraOption->setAction($this->context->link->getModuleLink($this->name, 'redirect'));
+
+        $displayPaymentList = (bool) Configuration::get('PAYSERA_DISPLAY_PAYMENT_LIST');
+        if ($displayPaymentList) {
+            //@todo: test
+            $projectID   = Configuration::get('PAYSERA_PROJECT_ID');
+            $currencyISO = $this->context->currency->iso_code;
+            $amount      = $this->context->cart->getOrderTotal() * 100;
+            $langISO     = strtolower($this->context->language->iso_code);
+            $langISO     = in_array($langISO, ['lt', 'en', 'ru', 'lv']) ? 'en' : $langISO;
+
+            $methods = WebToPay::getPaymentMethodList($projectID, $currencyISO)
+                ->filterForAmount($amount, $currencyISO)
+                ->setDefaultLanguage($langISO)
+                ->getCountries();
+
+            $this->context->smarty->assign([
+                'payMethods' => $methods,
+
+            ]);
+            $additionalInformation = $this->context->smarty
+                ->fetch('module:paysera/views/templates/hook/payment-options.tpl');
+
+            $payseraOption->setAdditionalInformation($additionalInformation);
+        }
 
         return [$payseraOption];
     }
@@ -103,6 +125,29 @@ class Paysera extends PaymentModule
     public function hookPaymentReturn(array $params)
     {
         //@todo: implement
+    }
+
+    /**
+     * Check if module support cart currency
+     *
+     * @return bool
+     */
+    public function checkCurrency()
+    {
+        $idCurrency = $this->context->cart->id_currency;
+
+        $currency = new Currency($idCurrency);
+        $moduleCurrencies = $this->getCurrency($idCurrency);
+
+        if (is_array($moduleCurrencies)) {
+            foreach ($moduleCurrencies as $moduleCurrency) {
+                if ($currency->id == $moduleCurrency['id_currency']) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -116,7 +161,51 @@ class Paysera extends PaymentModule
             'PAYSERA_PROJECT_ID' => '',
             'PAYSERA_PROJECT_PASSWORD' => '',
             'PAYSERA_TESTING_MODE' => 1,
+            'PAYSERA_DISPLAY_PAYMENT_LIST' => 1,
+            'PAYSERA_DEFAULT_COUNTRY' => 'lt',
         ];
+    }
+
+    /**
+     * Install paysera order state
+     *
+     * @return bool
+     */
+    protected function installOrderState()
+    {
+        $orderState = new OrderState();
+        $orderState->color = '#206f9f';
+        $orderState->module_name = $this->name;
+        $orderState->unremovable = 0;
+
+        foreach (Language::getLanguages(true, false, true) as $idLang) {
+            $orderState->name[$idLang] = 'Awaiting Paysera payment';
+        }
+
+        if (!$orderState->save()) {
+            return false;
+        }
+
+        Configuration::updateValue('PAYSERA_ORDER_STATE_ID', $orderState->id);
+
+        return true;
+    }
+
+    /**
+     * Uninstall paysera order state
+     *
+     * @return bool
+     */
+    protected function uninstallOrderState()
+    {
+        $idOrderState = (int) Configuration::get('PAYSERA_ORDER_STATE_ID');
+        $orderState = new OrderState($idOrderState);
+
+        if (!Validate::isLoadedObject($orderState)) {
+            return true;
+        }
+
+        return $orderState->delete();
     }
 
     /**

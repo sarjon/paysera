@@ -46,8 +46,8 @@ class AdminPayseraConfigurationController extends ModuleAdminController
                         'validation' => 'isString',
                         'class' => 'fixed-width-xxl',
                     ],
-                    'PAYSERA_TEST_MODE' => [
-                        'title' => $this->l('Testing mode'),
+                    'PAYSERA_DISPLAY_PAYMENT_LIST' => [
+                        'title' => $this->l('Display payment list'),
                         'validation' => 'isBool',
                         'type' => 'bool',
                         'cast' => 'intval',
@@ -59,6 +59,13 @@ class AdminPayseraConfigurationController extends ModuleAdminController
                         'class' => 'fixed-width-xxl',
                         'list' => $this->getCountries(),
                         'identifier' => 'id',
+                    ],
+                    'PAYSERA_TEST_MODE' => [
+                        'title' => $this->l('Testing mode'),
+                        'validation' => 'isBool',
+                        'type' => 'bool',
+                        'cast' => 'intval',
+                        'class' => 'fixed-width-xxl',
                     ],
                 ],
                 'submit' => [
@@ -72,6 +79,10 @@ class AdminPayseraConfigurationController extends ModuleAdminController
     {
         $countries = [];
         $projectID = (string) Configuration::get('PAYSERA_PROJECT_ID');
+
+        if (!$projectID) {
+            return $countries;
+        }
 
         $methods = WebToPay::getPaymentMethodList($projectID)
             ->setDefaultLanguage($this->context->language->iso_code)
