@@ -123,7 +123,9 @@ class Paysera extends PaymentModule
 
         $displayPaymentMethods = (bool) Configuration::get('PAYSERA_DISPLAY_PAYMENT_METHODS');
         if ($displayPaymentMethods) {
-            $projectID   = Configuration::get('PAYSERA_PROJECT_ID');
+            $projectID        = Configuration::get('PAYSERA_PROJECT_ID');
+            $defaultCountry   = Configuration::get('PAYSERA_DEFAULT_COUNTRY');
+
             $currencyISO = $this->context->currency->iso_code;
             $amount      = $this->context->cart->getOrderTotal() * 100;
             $langISO     = strtolower($this->context->language->iso_code);
@@ -135,7 +137,7 @@ class Paysera extends PaymentModule
                 ->getCountries();
 
             $this->context->smarty->assign([
-                'defaultCountry' => Configuration::get('PAYSERA_DEFAULT_COUNTRY'),
+                'defaultCountry' => $defaultCountry,
                 'payMethods' => $methods,
             ]);
 
@@ -146,7 +148,7 @@ class Paysera extends PaymentModule
                     'name' => 'paysera_payment_method',
                     'type' => 'hidden',
                     'value' => '',
-                ]
+                ],
             ]);
         }
 

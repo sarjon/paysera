@@ -63,8 +63,9 @@ class PayseraRedirectModuleFrontController extends ModuleFrontController
         $cart     = $this->context->cart;
         $order    = Order::getByCartId($cart->id);
         $currency = new Currency($order->id_currency);
-        $address  = new Address($order->id_address_delivery);
+        $address  = new Address($order->id_address_invoice);
         $country  = new Country($address->id_country);
+        $state    = new State($address->id_state);
         $customer = $this->context->customer;
 
         $data = [
@@ -84,11 +85,38 @@ class PayseraRedirectModuleFrontController extends ModuleFrontController
             'p_email'       => $customer->email,
             'p_street'      => $address->address1,
             'p_city'        => $address->city,
+            'p_state'       => $state->iso_code,
             'p_zip'         => $address->postcode,
             'p_countrycode' => $country->iso_code,
-            //'system'        => 'PrestaShop 1.7',
+            'lang'          => $this->getPayseraLangCode(),
         ];
 
         return $data;
+    }
+
+    /**
+     * Get language code which will be sent to paysera
+     */
+    protected function getPayseraLangCode()
+    {
+        $langISO = $this->context->language->iso_code;
+
+        switch ($langISO) {
+            case 'lt':
+                return 'LIT';
+            case 'lv':
+                return 'LAV';
+            case 'ee':
+                return 'EST';
+            case 'ru':
+                return 'RUS';
+            case 'de':
+                return 'GER';
+            case 'pl':
+                return 'POL';
+            default:
+            case 'en':
+                return 'ENG';
+        }
     }
 }
