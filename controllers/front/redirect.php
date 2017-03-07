@@ -19,9 +19,7 @@ class PayseraRedirectModuleFrontController extends ModuleFrontController
      */
     public function postProcess()
     {
-        if (!$this->module->active || !$this->module->checkCurrency()) {
-            Tools::redirect($this->context->link->getPageLink('order'));
-        }
+        $this->processValidations();
 
         $cart = $this->context->cart;
 
@@ -34,7 +32,7 @@ class PayseraRedirectModuleFrontController extends ModuleFrontController
             [],
             $cart->id_currency,
             false,
-            $this->context->cart->secure_key
+            $this->context->customer->secure_key
         );
 
         $paymentData = $this->collectPaymentData();
@@ -117,6 +115,45 @@ class PayseraRedirectModuleFrontController extends ModuleFrontController
             default:
             case 'en':
                 return 'ENG';
+        }
+    }
+
+    /**
+     * Process validations (cart, module, currencies and etc.)
+     */
+    protected function processValidations()
+    {
+        $cart = $this->context->cart;
+
+        if ($cart->id_customer == 0 ||
+            $cart->id_address_delivery == 0 ||
+            $cart->id_address_invoice == 0
+        ) {
+            Tools::redirect($this->context->link->getPageLink('order'));
+        }
+
+        if (!$this->module->active || !$this->module->checkCurrency()) {
+            Tools::redirect($this->context->link->getPageLink('order'));
+        }
+
+        $authorized = false;
+        $paymentModules = Module::getPaymentModules();
+
+        foreach ($paymentModules as $module) {
+            if ($module['name'] == $this->module->name) {
+                $authorized = true;
+                break;
+            }
+        }
+
+        if (!$authorized) {
+            $this->errors[] = $this->module->l('This payment method is not available.', 'redirect');
+            $this->redirectWithNotifications($this->context->link->getPageLink('order'));
+        }
+
+        $customer = new Customer($cart->id_customer);
+        if (!Validate::isLoadedObject($customer)) {
+            Tools::redirect($this->context->link->getPageLink('order'));
         }
     }
 }

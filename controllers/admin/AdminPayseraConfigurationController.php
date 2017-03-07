@@ -31,9 +31,13 @@ class AdminPayseraConfigurationController extends ModuleAdminController
     public function initContent()
     {
         $moduleCurrencies = Currency::checkPaymentCurrencies($this->module->id);
-
         if (!count($moduleCurrencies)) {
             $this->warnings[] = $this->l('No currencies configured for this module.');
+        }
+
+        $testingMode = (bool) Configuration::get('PAYSERA_TEST_MODE');
+        if ($testingMode) {
+            $this->warnings[] = $this->l('Module is in testing mode.');
         }
 
         parent::initContent();
