@@ -26,6 +26,20 @@ class AdminPayseraConfigurationController extends ModuleAdminController
     }
 
     /**
+     * Add custom content
+     */
+    public function initContent()
+    {
+        $moduleCurrencies = Currency::checkPaymentCurrencies($this->module->id);
+
+        if (!count($moduleCurrencies)) {
+            $this->warnings[] = $this->l('No currencies configured for this module.');
+        }
+
+        parent::initContent();
+    }
+
+    /**
      * Define configuration options
      */
     protected function initOptions()
