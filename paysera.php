@@ -97,12 +97,11 @@ class Paysera extends PaymentModule
 
         $displayPaymentList = (bool) Configuration::get('PAYSERA_DISPLAY_PAYMENT_LIST');
         if ($displayPaymentList) {
-            //@todo: test
             $projectID   = Configuration::get('PAYSERA_PROJECT_ID');
             $currencyISO = $this->context->currency->iso_code;
             $amount      = $this->context->cart->getOrderTotal() * 100;
             $langISO     = strtolower($this->context->language->iso_code);
-            $langISO     = in_array($langISO, ['lt', 'en', 'ru', 'lv']) ? 'en' : $langISO;
+            $langISO     = in_array($langISO, ['lt', 'en', 'ru', 'lv', 'ee', 'et', 'pl', 'bg']) ? $langISO : 'en';
 
             $methods = WebToPay::getPaymentMethodList($projectID, $currencyISO)
                 ->filterForAmount($amount, $currencyISO)
@@ -110,13 +109,12 @@ class Paysera extends PaymentModule
                 ->getCountries();
 
             $this->context->smarty->assign([
+                'defaultCountry' => Configuration::get('PAYSERA_DEFAULT_COUNTRY'),
                 'payMethods' => $methods,
-
             ]);
-            $additionalInformation = $this->context->smarty
-                ->fetch('module:paysera/views/templates/hook/payment-options.tpl');
 
-            $payseraOption->setAdditionalInformation($additionalInformation);
+            $additionalInfo = $this->context->smarty->fetch('module:paysera/views/templates/hook/payment-options.tpl');
+            $payseraOption->setAdditionalInformation($additionalInfo);
         }
 
         return [$payseraOption];

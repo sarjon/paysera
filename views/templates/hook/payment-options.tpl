@@ -1,39 +1,49 @@
-<table>
-    <tr>
-        <td style="width:210px">{l s='Select payment country' mod='paysera'}</td>
-        <td>
-            <select class="payment-country-select">
-                {foreach from=$payMethods item=country}
-                    <option {if $country->getCode() == $defaultCountry} selected="selected" {/if}
-                            value="{$country->getCode()|escape:'quotes'}">{$country->getTitle()}</option>
+<section id="payseraAdditionalInformation">
+
+    <div class="form-group row">
+        <div class="col-sm-12 form-control-label clearfix">
+            <label class="float-left">
+                {l s='Select payment country' mod='paysera'}
+            </label>
+        </div>
+        <div class="col-sm-6">
+            <select class="form-control form-control-select" title="{l s='Payment country' mod='paysera'}">
+                {foreach $payMethods as $country}
+                    <option value="{$country->getCode()}"
+                            {if $country->getCode() == $defaultCountry} selected="selected" {/if}
+                    >
+                        {$country->getTitle()}
+                    </option>
                 {/foreach}
             </select>
-        </td>
-    </tr>
-</table>
+        </div>
+    </div>
 
-<div id="payment-content">
-    <div class="payment-methods-wrapper">
-        {foreach from=$payMethods item=country}
-            <div id="{$country->getCode()|escape:'quotes'}" class="payment-countries"
-                 style="display:{if $country->getCode() == $defaultCountry}table{else}none{/if};">
-                {foreach from=$country->getGroups() item=group}
-                    <div class="payment-group-wrapper">
-                        <div class="payment-group-title">{$group->getTitle()|escape:'quotes'}</div>
-                        {foreach from=$group->getPaymentMethods() item=paymentMethod}
-                            <div class="payment-item">
-                                <input type="radio" class="radio" name="payment_method"
-                                       value="{$paymentMethod->getKey()|escape:'quotes'}" class="payment-radio"/>
-                                <img src="{$paymentMethod->getLogoUrl()|escape:'quotes'}" title="{$paymentMethod->getTitle()}"
-                                     alt="{$paymentMethod->getTitle()|escape:'quotes'}" class="payment-logo"/>
+    <hr>
 
-                                <div class="clear"></div>
-                            </div>
-                        {/foreach}
-                        <div class="clear"></div>
+    {foreach $payMethods as $country}
+        <fieldset id="payseraPaymentMethods_{$country->getCode()}" class="form-group row" {if $country->getCode() != $defaultCountry}style="display:none"{/if}>
+            {foreach $country->getGroups() as $group}
+                <legend class="col-form-legend col-sm-12">{$group->getTitle()}</legend>
+                <div class="col-sm-12">
+                {foreach $group->getPaymentMethods() as $paymentMethod}
+                    <div class="form-check">
+                        <label class="form-check-label">
+                            <input class="form-check-input"
+                                   type="radio"
+                                   name="paysera_payment_method"
+                                   value="{$paymentMethod->getKey()}"
+                                   style="height: 80%;"
+                            >
+                            <img src="{$paymentMethod->getLogoUrl()}"
+                                 title="{$paymentMethod->getTitle()}"
+                                 alt="{$paymentMethod->getTitle()}"
+                            >
+                        </label>
                     </div>
                 {/foreach}
-            </div>
-        {/foreach}
-    </div>
-</div>
+                </div>
+            {/foreach}
+        </fieldset>
+    {/foreach}
+</section>
