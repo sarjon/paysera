@@ -28,9 +28,9 @@
                 {foreach $group->getPaymentMethods() as $paymentMethod}
                     <div class="form-check">
                         <label class="form-check-label">
-                            <input class="form-check-input"
+                            <input class="form-check-input js-paysera-payment-method"
                                    type="radio"
-                                   name="paysera_payment_method"
+                                   name="paysera_payment_method_input"
                                    value="{$paymentMethod->getKey()}"
                                    style="height: 80%;"
                             >

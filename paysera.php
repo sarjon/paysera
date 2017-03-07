@@ -141,6 +141,13 @@ class Paysera extends PaymentModule
 
             $additionalInfo = $this->context->smarty->fetch('module:paysera/views/templates/hook/payment-options.tpl');
             $payseraOption->setAdditionalInformation($additionalInfo);
+            $payseraOption->setInputs([
+                'paysera_payment_method' => [
+                    'name' => 'paysera_payment_method',
+                    'type' => 'hidden',
+                    'value' => '',
+                ]
+            ]);
         }
 
         return [$payseraOption];

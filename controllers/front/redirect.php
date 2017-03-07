@@ -56,11 +56,11 @@ class PayseraRedirectModuleFrontController extends ModuleFrontController
      */
     protected function collectPaymentData()
     {
-        $projectID = Configuration::get('PAYSERA_PROJECT_ID');
+        $projectID       = Configuration::get('PAYSERA_PROJECT_ID');
         $projectPassword = Configuration::get('PAYSERA_PROJECT_PASSWORD');
-        $testingMode = Configuration::get('PAYSERA_TESTING_MODE');
-        $cart = $this->context->cart;
+        $testingMode     = Configuration::get('PAYSERA_TESTING_MODE');
 
+        $cart     = $this->context->cart;
         $order    = Order::getByCartId($cart->id);
         $currency = new Currency($order->id_currency);
         $address  = new Address($order->id_address_delivery);
