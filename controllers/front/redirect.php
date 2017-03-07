@@ -59,8 +59,7 @@ class PayseraRedirectModuleFrontController extends ModuleFrontController
         $testingMode     = Configuration::get('PAYSERA_TESTING_MODE');
 
         $cart     = $this->context->cart;
-        $idOrder  = Order::getIdByCartId($cart->id);
-        $order    = new Order($idOrder);
+        $order    = Order::getByCartId($cart->id);
         $currency = new Currency($order->id_currency);
         $address  = new Address($order->id_address_invoice);
         $country  = new Country($address->id_country);

@@ -16,7 +16,7 @@ class Paysera extends PaymentModule
         $this->author = 'Šarūnas Jonušas';
         $this->version = '1.0.0';
         $this->tab = 'payments_gateways';
-        $this->compatibility = ['min' => '1.7.0.0', 'max' => _PS_VERSION_];
+        $this->compatibility = ['min' => '1.7.1.0', 'max' => _PS_VERSION_];
         $this->controllers = ['redirect', 'callback', 'accept', 'cancel'];
 
         parent::__construct();
