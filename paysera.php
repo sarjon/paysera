@@ -2,8 +2,14 @@
 
 use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
 
+/**
+ * Class Paysera
+ */
 class Paysera extends PaymentModule
 {
+    /**
+     * Paysera constructor.
+     */
     public function __construct()
     {
         $this->name = 'paysera';
@@ -39,6 +45,7 @@ class Paysera extends PaymentModule
         $hooks = [
             'paymentOptions',
             'paymentReturn',
+            'actionFrontControllerSetMedia',
         ];
 
         $defaultConfiguration = $this->getDefaultConfiguration();
@@ -85,6 +92,25 @@ class Paysera extends PaymentModule
     }
 
     /**
+     * Add JS & CSS to front controller
+     */
+    public function hookActionFrontControllerSetMedia()
+    {
+        $controller = $this->context->controller->php_self;
+
+        if ('order' == $controller) {
+            $displayPaymentMethods = (bool) Configuration::get('PAYSERA_DISPLAY_PAYMENT_METHODS');
+            if ($displayPaymentMethods) {
+                $this->context->controller->registerJavascript(
+                    sha1('modules-paysera-order'),
+                    'modules/paysera/views/js/front/payment-methods.js',
+                    ['media' => 'all']
+                );
+            }
+        }
+    }
+
+    /**
      * Get module payment options
      *
      * @return array|PaymentOption[]
@@ -95,8 +121,8 @@ class Paysera extends PaymentModule
         $payseraOption->setCallToActionText($this->l('Pay by Paysera'));
         $payseraOption->setAction($this->context->link->getModuleLink($this->name, 'redirect'));
 
-        $displayPaymentList = (bool) Configuration::get('PAYSERA_DISPLAY_PAYMENT_LIST');
-        if ($displayPaymentList) {
+        $displayPaymentMethods = (bool) Configuration::get('PAYSERA_DISPLAY_PAYMENT_METHODS');
+        if ($displayPaymentMethods) {
             $projectID   = Configuration::get('PAYSERA_PROJECT_ID');
             $currencyISO = $this->context->currency->iso_code;
             $amount      = $this->context->cart->getOrderTotal() * 100;
@@ -126,7 +152,7 @@ class Paysera extends PaymentModule
     }
 
     /**
-     * Check if module support cart currency
+     * Check if module supports cart currency
      *
      * @return bool
      */
@@ -159,7 +185,7 @@ class Paysera extends PaymentModule
             'PAYSERA_PROJECT_ID' => '',
             'PAYSERA_PROJECT_PASSWORD' => '',
             'PAYSERA_TESTING_MODE' => 1,
-            'PAYSERA_DISPLAY_PAYMENT_LIST' => 1,
+            'PAYSERA_DISPLAY_PAYMENT_METHODS' => 1,
             'PAYSERA_DEFAULT_COUNTRY' => 'lt',
         ];
     }

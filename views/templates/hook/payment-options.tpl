@@ -1,5 +1,4 @@
 <section id="payseraAdditionalInformation">
-
     <div class="form-group row">
         <div class="col-sm-12 form-control-label clearfix">
             <label class="float-left">
@@ -7,7 +6,7 @@
             </label>
         </div>
         <div class="col-sm-6">
-            <select class="form-control form-control-select" title="{l s='Payment country' mod='paysera'}">
+            <select class="form-control form-control-select js-paysera-payment-country" title="{l s='Payment country' mod='paysera'}">
                 {foreach $payMethods as $country}
                     <option value="{$country->getCode()}"
                             {if $country->getCode() == $defaultCountry} selected="selected" {/if}
@@ -22,7 +21,7 @@
     <hr>
 
     {foreach $payMethods as $country}
-        <fieldset id="payseraPaymentMethods_{$country->getCode()}" class="form-group row" {if $country->getCode() != $defaultCountry}style="display:none"{/if}>
+        <fieldset id="payseraPaymentMethods_{$country->getCode()}" class="form-group row js-paysera-payment-methods" {if $country->getCode() != $defaultCountry}style="display:none"{/if}>
             {foreach $country->getGroups() as $group}
                 <legend class="col-form-legend col-sm-12">{$group->getTitle()}</legend>
                 <div class="col-sm-12">

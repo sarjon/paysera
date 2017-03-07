@@ -46,8 +46,8 @@ class AdminPayseraConfigurationController extends ModuleAdminController
                         'validation' => 'isString',
                         'class' => 'fixed-width-xxl',
                     ],
-                    'PAYSERA_DISPLAY_PAYMENT_LIST' => [
-                        'title' => $this->l('Display payment list'),
+                    'PAYSERA_DISPLAY_PAYMENT_METHODS' => [
+                        'title' => $this->l('Display payment methods'),
                         'validation' => 'isBool',
                         'type' => 'bool',
                         'cast' => 'intval',
