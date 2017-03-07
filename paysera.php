@@ -189,7 +189,7 @@ class Paysera extends PaymentModule
     protected function getDefaultConfiguration()
     {
         return [
-            'PAYSERA_PROJECT_ID' => '',
+            'PAYSERA_PROJECT_ID' => '12345',
             'PAYSERA_PROJECT_PASSWORD' => '',
             'PAYSERA_TESTING_MODE' => 1,
             'PAYSERA_DISPLAY_PAYMENT_METHODS' => 1,
