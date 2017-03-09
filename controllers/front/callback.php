@@ -4,6 +4,10 @@ class PayseraCallbackModuleFrontController extends ModuleFrontController
 {
     public function postProcess()
     {
+        if (!$this->module->active) {
+            exit;
+        }
+
         $projectID         = Configuration::get('PAYSERA_PROJECT_ID');
         $projectPassword   = Configuration::get('PAYSERA_PROJECT_PASSWORD');
         $payseraOrderState = (int) Configuration::get('PAYSERA_ORDER_STATE_ID');
@@ -18,7 +22,9 @@ class PayseraCallbackModuleFrontController extends ModuleFrontController
                 $responseCurrency = $response['paycurrency'];
 
                 $order = new Order($idOrder);
-                if (!Validate::isLoadedObject($order) || $order->getCurrentState() != $payseraOrderState) {
+                if (!Validate::isLoadedObject($order) ||
+                    $order->getCurrentState() != $payseraOrderState
+                ) {
                     exit('OK');
                 }
 

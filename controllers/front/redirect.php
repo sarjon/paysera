@@ -132,7 +132,9 @@ class PayseraRedirectModuleFrontController extends ModuleFrontController
             Tools::redirect($this->context->link->getPageLink('order'));
         }
 
-        if (!$this->module->active || !$this->module->checkCurrency()) {
+        if (!$this->module->active ||
+            !$this->module->checkCurrency()
+        ) {
             Tools::redirect($this->context->link->getPageLink('order'));
         }
 

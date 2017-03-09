@@ -4,6 +4,10 @@ class PayseraAcceptModuleFrontController extends ModuleFrontController
 {
     public function postProcess()
     {
+        if (!$this->module->active) {
+            Tools::redirect($this->context->link->getPageLink('order'));
+        }
+
         $projectID         = Configuration::get('PAYSERA_PROJECT_ID');
         $projectPassword   = Configuration::get('PAYSERA_PROJECT_PASSWORD');
 
@@ -11,9 +15,11 @@ class PayseraAcceptModuleFrontController extends ModuleFrontController
 
         $idOrder = $response['orderid'];
         $order = new Order($idOrder);
-
         $customer = $this->context->customer;
-        if (!Validate::isLoadedObject($customer)) {
+
+        if (!Validate::isLoadedObject($customer) ||
+            !Validate::isLoadedObject($order)
+        ) {
             Tools::redirect($this->context->link->getPageLink('order'));
         }
 
