@@ -1,6 +1,6 @@
 # Paysera payments for PrestaShop
 
-Paysera payments for PrestaShop 1.7.1.* version. You should test this module before using it in production.
+Paysera payments for PrestaShop 1.7.1.x version. You should test this module before using it in production.
 
 Looking for Paysera payments in PrestaShop 1.6 and below? Check it at official [Paysera support][2] page.
 
