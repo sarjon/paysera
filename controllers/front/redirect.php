@@ -1,13 +1,19 @@
 <?php
+/**
+ * This file is part of the paysera module.
+ *
+ * @author    Sarunas Jonusas, https://github.com/sarjon
+ * @copyright Copyright (c) Sarunas Jonusas
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 class PayseraRedirectModuleFrontController extends ModuleFrontController
 {
     public $auth = true;
 
-    /**
-     * @var string If page is accessed directly then redirect to 404
-     */
-    protected $redirect_after = '404';
+    public $ssl = true;
 
     /**
      * @var Paysera
