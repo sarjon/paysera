@@ -2,6 +2,8 @@
 
 Paysera payments for PrestaShop 1.7.1.* version. You should test this module before using it in production.
 
+Looking for Paysera payments in PrestaShop 1.6 and below? Check it at official [Paysera support][2] page.
+
 ## Installation
 
 #### Step 1: Clone repository into modules directory
@@ -33,3 +35,4 @@ Found an issue? Feel free to make a pull request.
 This module is licensed under the MIT license. Please see the complete license in the bundle `LICENSE` file.
 
 [1]: https://www.paysera.com/v2/en-GB/index
+[2]: https://support.paysera.com/index.php?/payseraeng/Knowledgebase/Article/View/93/37/prestashop
