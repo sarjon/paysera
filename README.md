@@ -24,6 +24,10 @@ Install module as usual from PrestaShop BackOffice.
 
 Sign up at [Paysera][1] to get your configuration credentials.
 
+## Contributing
+
+Found an issue? Feel free to make a pull request.
+
 ## License
 
 This module is licensed under the MIT license. Please see the complete license in the bundle `LICENSE` file.
