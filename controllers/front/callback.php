@@ -19,21 +19,18 @@ class PayseraCallbackModuleFrontController extends ModuleFrontController
 
         $projectID         = Configuration::get('PAYSERA_PROJECT_ID');
         $projectPassword   = Configuration::get('PAYSERA_PROJECT_PASSWORD');
-        $payseraOrderState = (int) Configuration::get('PAYSERA_ORDER_STATE_ID');
         $paymentAcceptedOrderStateID = (int) Configuration::get('PS_OS_PAYMENT');
 
         try {
             $response = WebToPay::validateAndParseData($_GET, $projectID, $projectPassword);
 
-            if ($response['status'] == 1) {
+            if (Paysera::PAYMENT_ACCEPTED == $response['status']) {
                 $idOrder = $response['orderid'];
                 $responseAmount = (int) $response['payamount'];
                 $responseCurrency = $response['paycurrency'];
 
                 $order = new Order($idOrder);
-                if (!Validate::isLoadedObject($order) ||
-                    $order->getCurrentState() != $payseraOrderState
-                ) {
+                if ($order->hasBeenPaid()) {
                     exit('OK');
                 }
 
@@ -41,11 +38,11 @@ class PayseraCallbackModuleFrontController extends ModuleFrontController
                 $orderCurrency = Currency::getCurrency($order->id_currency);
 
                 if ($responseAmount < $orderAmount) {
-                    exit(sprintf('Bad amount: %s', $responseAmount));
+                    exit;
                 }
 
                 if ($responseCurrency != $orderCurrency['iso_code']) {
-                    exit(sprintf('Bad currency: %s', $responseCurrency));
+                    exit;
                 }
 
                 $history = new OrderHistory();
@@ -55,10 +52,8 @@ class PayseraCallbackModuleFrontController extends ModuleFrontController
 
                 exit('OK');
             }
-        } catch (Exception $e) {
-            exit($e->getMessage());
-        }
+        } catch (Exception $e) {}
 
-        exit('Not paid');
+        exit;
     }
 }

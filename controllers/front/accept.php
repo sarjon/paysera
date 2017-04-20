@@ -14,22 +14,18 @@ class PayseraAcceptModuleFrontController extends ModuleFrontController
     public function postProcess()
     {
         if (!$this->module->active) {
-            Tools::redirect($this->context->link->getPageLink('order'));
+            Tools::redirect($this->context->link->getPageLink('index'));
         }
 
-        $projectID         = Configuration::get('PAYSERA_PROJECT_ID');
-        $projectPassword   = Configuration::get('PAYSERA_PROJECT_PASSWORD');
+        $idOrder = (int) Tools::getValue('id_order');
 
-        $response = WebToPay::validateAndParseData($_REQUEST, $projectID, $projectPassword);
-
-        $idOrder = $response['orderid'];
         $order = new Order($idOrder);
         $customer = $this->context->customer;
 
         if (!Validate::isLoadedObject($customer) ||
             !Validate::isLoadedObject($order)
         ) {
-            Tools::redirect($this->context->link->getPageLink('order'));
+            Tools::redirect($this->context->link->getPageLink('index'));
         }
 
         $params = [

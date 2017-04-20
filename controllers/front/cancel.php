@@ -13,6 +13,30 @@ class PayseraCancelModuleFrontController extends ModuleFrontController
 {
     public function postProcess()
     {
-        Tools::redirect($this->context->link->getPageLink('order'));
+        if (!$this->module->active) {
+            Tools::redirect($this->context->link->getPageLink('index'));
+        }
+
+        $idOrder = (int) Tools::getValue('id_order');
+
+        $order = new Order($idOrder);
+        $customer = $this->context->customer;
+
+        if (!Validate::isLoadedObject($customer) ||
+            !Validate::isLoadedObject($order)
+        ) {
+            Tools::redirect($this->context->link->getPageLink('index'));
+        }
+
+        $params = [
+            'id_cart' => $order->id_cart,
+            'id_module' => $this->module->id,
+            'id_order' => $order->id,
+            'key' => $customer->secure_key,
+        ];
+
+        $this->errors[] = $this->l('Payment has been canceled', 'cancel');
+
+        $this->redirectWithNotifications($this->context->link->getPageLink('order-confirmation', null, null, $params));
     }
 }

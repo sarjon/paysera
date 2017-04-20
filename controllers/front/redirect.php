@@ -80,6 +80,8 @@ class PayseraRedirectModuleFrontController extends ModuleFrontController
         $state    = new State($address->id_state);
         $customer = $this->context->customer;
 
+        $urlParams = ['id_order' => $order->id];
+
         $data = [
             'projectid'     => $projectID,
             'sign_password' => $projectPassword,
@@ -87,8 +89,8 @@ class PayseraRedirectModuleFrontController extends ModuleFrontController
             'amount'        => $cart->getOrderTotal() * 100,
             'currency'      => $currency->iso_code,
             'country'       => strtoupper($country->iso_code),
-            'accepturl'     => $this->context->link->getModuleLink($this->module->name, 'accept'),
-            'cancelurl'     => $this->context->link->getModuleLink($this->module->name, 'cancel'),
+            'accepturl'     => $this->context->link->getModuleLink($this->module->name, 'accept', $urlParams),
+            'cancelurl'     => $this->context->link->getModuleLink($this->module->name, 'cancel', $urlParams),
             'callbackurl'   => $this->context->link->getModuleLink($this->module->name, 'callback'),
             'test'          => (int) $testingMode,
             'payment'       => Tools::getValue('paysera_payment_method'),
@@ -99,7 +101,7 @@ class PayseraRedirectModuleFrontController extends ModuleFrontController
             'p_city'        => $address->city,
             'p_state'       => $state->iso_code,
             'p_zip'         => $address->postcode,
-            'p_countrycode' => $country->iso_code,
+            'p_countrycode' => strtoupper($country->iso_code),
             'lang'          => $this->getPayseraLangCode(),
         ];
 
@@ -108,6 +110,8 @@ class PayseraRedirectModuleFrontController extends ModuleFrontController
 
     /**
      * Get language code which will be sent to paysera
+     *
+     * @return string
      */
     protected function getPayseraLangCode()
     {

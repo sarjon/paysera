@@ -17,6 +17,13 @@ use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
 class Paysera extends PaymentModule
 {
     /**
+     * Paysera payment constants
+     */
+    const PAYMENT_NOT_EXECUTED = 0;
+    const PAYMENT_ACCEPTED = 1;
+    const PAYMENT_ACCEPTED_NOT_EXECUTED = 2;
+
+    /**
      * Paysera constructor.
      */
     public function __construct()
