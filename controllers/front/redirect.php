@@ -29,17 +29,25 @@ class PayseraRedirectModuleFrontController extends ModuleFrontController
 
         $cart = $this->context->cart;
 
-        $this->module->validateOrder(
-            $cart->id,
-            (int) Configuration::get('PAYSERA_ORDER_STATE_ID'),
-            $cart->getOrderTotal(),
-            $this->module->displayName,
-            null,
-            [],
-            $cart->id_currency,
-            false,
-            $this->context->customer->secure_key
-        );
+        try {
+            $orderValidation = $this->module->validateOrder(
+                $cart->id,
+                (int) Configuration::get('PAYSERA_ORDER_STATE_ID'),
+                $cart->getOrderTotal(),
+                $this->module->displayName,
+                null,
+                [],
+                $cart->id_currency,
+                false,
+                $this->context->customer->secure_key
+            );
+        } catch (Exception $e) {
+            $orderValidation = false;
+        }
+
+        if (!$orderValidation) {
+            Tools::redirect($this->context->link->getPageLink('order'));
+        }
 
         $paymentData = $this->collectPaymentData();
 
