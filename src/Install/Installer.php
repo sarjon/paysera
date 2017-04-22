@@ -129,6 +129,12 @@ class Installer
         $defaultConfiguration = $this->moduleSettings['configuration'];
 
         foreach ($defaultConfiguration as $name => $value) {
+            // skip order state configuration
+            // since those will be saved after order states are created
+            if (strpos($name, 'ORDER_STATE') !== false) {
+                continue;
+            }
+
             if (!$this->configurationAdapter->set($name, $value)) {
                 return false;
             }
@@ -198,8 +204,9 @@ class Installer
         foreach ($orderStates as $state) {
             $idOrderState = $this->configurationAdapter->get($state['config']);
             $orderState = new OrderState($idOrderState);
+            $orderState->deleted = 1;
 
-            if (!$orderState->delete()) {
+            if (!$orderState->save()) {
                 return false;
             }
         }
