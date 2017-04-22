@@ -17,7 +17,7 @@ parameters:
             - { name: 'Payment accepted via Paysera', color: '#206f9f', paid: 1, config: 'PAYSERA_PAYMENT_ACCEPTED_ORDER_STATE_ID'}
 
         tabs:
-            - { name: 'Paysera', class_name: 'AdminPayseraConfiguration', parent: 'AdminParentPayment' }
+            - { name: 'Paysera', class_name: 'AdminPayseraConfiguration', ParentClassName: 'AdminParentPayment' }
 
         hooks:
             - 'moduleRoutes'
