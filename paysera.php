@@ -41,7 +41,7 @@ class Paysera extends PaymentModule
         $this->version = '1.0.0';
         $this->tab = 'payments_gateways';
         $this->compatibility = ['min' => '1.7.1.0', 'max' => _PS_VERSION_];
-        $this->controllers = ['redirect', 'callback', 'accept', 'cancel'];
+        $this->controllers = ['redirect', 'callback', 'accept', 'cancel', 'validation'];
 
         parent::__construct();
 
@@ -124,7 +124,7 @@ class Paysera extends PaymentModule
     {
         $payseraOption = new PaymentOption();
         $payseraOption->setCallToActionText($this->l('Pay by Paysera'));
-        $payseraOption->setAction($this->context->link->getModuleLink($this->name, 'redirect'));
+        $payseraOption->setAction($this->context->link->getModuleLink($this->name, 'validation'));
 
         $displayPaymentMethods = (bool) Configuration::get('PAYSERA_DISPLAY_PAYMENT_METHODS');
         if ($displayPaymentMethods) {
