@@ -168,6 +168,7 @@ class Installer
         foreach ($orderStates as $state) {
             $orderState = new OrderState();
             $orderState->color = $state['color'];
+            $orderState->paid = $state['paid'];
             $orderState->module_name = $this->module->name;
             $orderState->unremovable = 0;
 

@@ -32,7 +32,7 @@ class PayseraRedirectModuleFrontController extends ModuleFrontController
         try {
             $orderValidation = $this->module->validateOrder(
                 $cart->id,
-                (int) Configuration::get('PAYSERA_ORDER_STATE_ID'),
+                (int) Configuration::get('PAYSERA_AWAITING_PAYMENT_ORDER_STATE_ID'),
                 $cart->getOrderTotal(),
                 $this->module->displayName,
                 null,

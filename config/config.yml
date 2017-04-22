@@ -9,10 +9,12 @@ parameters:
             PAYSERA_TESTING_MODE: 1
             PAYSERA_DISPLAY_PAYMENT_METHODS: 1
             PAYSERA_DEFAULT_COUNTRY: 'lt'
-            PAYSERA_ORDER_STATE_ID: ~
+            PAYSERA_AWAITING_PAYMENT_ORDER_STATE_ID: ~
+            PAYSERA_PAYMENT_ACCEPTED_ORDER_STATE_ID: ~
 
         order_states:
-            - { name: 'Awaiting Paysera payment', color: '#206f9f', config: 'PAYSERA_ORDER_STATE_ID'}
+            - { name: 'Awaiting Paysera payment', color: '#206f9f', paid: 0, config: 'PAYSERA_AWAITING_PAYMENT_ORDER_STATE_ID'}
+            - { name: 'Payment accepted via Paysera', color: '#206f9f', paid: 1, config: 'PAYSERA_PAYMENT_ACCEPTED_ORDER_STATE_ID'}
 
         tabs:
             - { name: 'Paysera', class_name: 'AdminPayseraConfiguration', parent: 'AdminParentPayment' }

@@ -19,7 +19,7 @@ class PayseraCallbackModuleFrontController extends ModuleFrontController
 
         $projectID         = Configuration::get('PAYSERA_PROJECT_ID');
         $projectPassword   = Configuration::get('PAYSERA_PROJECT_PASSWORD');
-        $paymentAcceptedOrderStateID = (int) Configuration::get('PS_OS_PAYMENT');
+        $paymentAcceptedOrderStateID = (int) Configuration::get('PAYSERA_PAYMENT_ACCEPTED_ORDER_STATE_ID');
 
         try {
             $response = WebToPay::validateAndParseData($_GET, $projectID, $projectPassword);
