@@ -1,0 +1,24 @@
+imports:
+    - { resource: 'services.yml' }
+
+parameters:
+    module_settings:
+        configuration:
+            PAYSERA_PROJECT_ID: 123456
+            PAYSERA_PROJECT_PASSWORD: ''
+            PAYSERA_TESTING_MODE: 1
+            PAYSERA_DISPLAY_PAYMENT_METHODS: 1
+            PAYSERA_DEFAULT_COUNTRY: 'lt'
+            PAYSERA_ORDER_STATE_ID: ~
+
+        order_states:
+            - { name: 'Awaiting Paysera payment', color: '#206f9f', config: 'PAYSERA_ORDER_STATE_ID'}
+
+        tabs:
+            - { name: 'Paysera', class_name: 'AdminPayseraConfiguration', parent: 'AdminParentPayment' }
+
+        hooks:
+            - 'moduleRoutes'
+            - 'paymentOptions'
+            - 'paymentReturn'
+            - 'actionFrontControllerSetMedia'

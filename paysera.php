@@ -10,6 +10,9 @@
  */
 
 use PrestaShop\PrestaShop\Core\Payment\PaymentOption;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 /**
  * Class Paysera
@@ -22,6 +25,11 @@ class Paysera extends PaymentModule
     const PAYMENT_NOT_EXECUTED = 0;
     const PAYMENT_ACCEPTED = 1;
     const PAYMENT_ACCEPTED_NOT_EXECUTED = 2;
+
+    /**
+     * @var ContainerBuilder
+     */
+    protected $container;
 
     /**
      * Paysera constructor.
@@ -41,6 +49,7 @@ class Paysera extends PaymentModule
         $this->description = $this->l('Accept payments by Paysera system.');
 
         $this->autoload();
+        $this->buildContainer();
     }
 
     /**
@@ -58,19 +67,9 @@ class Paysera extends PaymentModule
      */
     public function install()
     {
-        $hooks = [
-            'paymentOptions',
-            'paymentReturn',
-            'actionFrontControllerSetMedia',
-        ];
+        $installer = $this->container->get('paysera.installer');
 
-        $defaultConfiguration = $this->getDefaultConfiguration();
-
-        foreach ($defaultConfiguration as $name => $value) {
-            Configuration::updateValue($name, $value);
-        }
-
-        return parent::install() && $this->registerHook($hooks) && $this->installOrderState();
+        return parent::install() && $installer->installl();
     }
 
     /**
@@ -80,13 +79,9 @@ class Paysera extends PaymentModule
      */
     public function uninstall()
     {
-        $defaultConfiguration = $this->getDefaultConfiguration();
+        $installer = $this->container->get('paysera.installer');
 
-        foreach (array_keys($defaultConfiguration) as $name) {
-            Configuration::deleteByName($name);
-        }
-
-        return $this->uninstallOrderState() && parent::uninstall();
+        return $installer->uninstall() && parent::uninstall();
     }
 
     /**
@@ -96,15 +91,9 @@ class Paysera extends PaymentModule
      */
     public function getTabs()
     {
-        $tabs = [
-            [
-                'name' => $this->l('Paysera'),
-                'class_name' => 'AdminPayseraConfiguration',
-                'ParentClassName' => 'AdminParentPayment',
-            ],
-        ];
+        $installer = $this->container->get('paysera.installer');
 
-        return $tabs;
+        return $installer->getTabs();
     }
 
     /**
@@ -200,61 +189,20 @@ class Paysera extends PaymentModule
     }
 
     /**
-     * Module default configuration
-     *
-     * @return array
+     * Build module service contaienr
      */
-    protected function getDefaultConfiguration()
+    private function buildContainer()
     {
-        return [
-            'PAYSERA_PROJECT_ID' => '12345',
-            'PAYSERA_PROJECT_PASSWORD' => '',
-            'PAYSERA_TESTING_MODE' => 1,
-            'PAYSERA_DISPLAY_PAYMENT_METHODS' => 1,
-            'PAYSERA_DEFAULT_COUNTRY' => 'lt',
-        ];
-    }
+        $this->container = new ContainerBuilder();
+        $this->container->addCompilerPass(new LegacyCompilerPass());
+        $this->container->set('paysera.module', $this);
 
-    /**
-     * Install paysera order state
-     *
-     * @return bool
-     */
-    protected function installOrderState()
-    {
-        $orderState = new OrderState();
-        $orderState->color = '#206f9f';
-        $orderState->module_name = $this->name;
-        $orderState->unremovable = 0;
+        $locator = new FileLocator($this->getLocalPath().'config');
+        $loader  = new YamlFileLoader($this->container, $locator);
 
-        foreach (Language::getLanguages(true, false, true) as $idLang) {
-            $orderState->name[$idLang] = 'Awaiting Paysera payment';
-        }
+        $loader->load('config.yml');
 
-        if (!$orderState->save()) {
-            return false;
-        }
-
-        Configuration::updateValue('PAYSERA_ORDER_STATE_ID', $orderState->id);
-
-        return true;
-    }
-
-    /**
-     * Uninstall paysera order state
-     *
-     * @return bool
-     */
-    protected function uninstallOrderState()
-    {
-        $idOrderState = (int) Configuration::get('PAYSERA_ORDER_STATE_ID');
-        $orderState = new OrderState($idOrderState);
-
-        if (!Validate::isLoadedObject($orderState)) {
-            return true;
-        }
-
-        return $orderState->delete();
+        $this->container->compile();
     }
 
     /**

@@ -1,0 +1,17 @@
+services:
+    paysera.module:
+        synthetic: true
+
+    paysera.adapter.configuration:
+        class: 'Sarjon\Paysera\Adapter\ConfigurationAdapter'
+
+    paysera.adapter.language:
+        class: 'Sarjon\Paysera\Adapter\LanguageAdapter'
+
+    paysera.installer:
+        class: 'Sarjon\Paysera\Install\Installer'
+        arguments:
+            - '@paysera.module'
+            - '@paysera.adapter.configuration'
+            - '@paysera.adapter.language'
+            - '%module_settings%'
