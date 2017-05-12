@@ -11,10 +11,6 @@
 
 class PayseraRedirectModuleFrontController extends ModuleFrontController
 {
-    public $auth = true;
-
-    public $ssl = true;
-
     /**
      * @var Paysera
      */
@@ -25,36 +21,52 @@ class PayseraRedirectModuleFrontController extends ModuleFrontController
      */
     public function postProcess()
     {
-        $paymentData = $this->collectPaymentData();
+        $idOrder = Tools::getValue('id_order');
+        $order = new Order($idOrder);
+        $customer = $this->context->customer;
 
-        if (null === $paymentData) {
-            Tools::redirect($this->context->link->getPageLink('order'));
+        if (!Validate::isLoadedObject($order) ||
+            $customer->id != $order->id_customer ||
+            $order->module != $this->module->name ||
+            !$this->module->active
+        ) {
+            $this->setRedirectAfter('404');
+            return;
         }
 
-        $request = WebToPay::buildRequest($paymentData);
-        $paymentUrl = WebToPay::getPaymentUrl().'?'.http_build_query($request);
+        if ($order->hasBeenPaid()) {
+            $idLang = $this->context->language->id;
+            $this->setRedirectAfter(
+                $this->context->link->getPageLink('order-detail', true, $idLang, ['id_order' => $order->id])
+            );
+            return;
+        }
 
-        Tools::redirect($paymentUrl);
+        $paymentData = $this->collectPaymentData($order);
+
+        WebToPay::redirectToPayment($paymentData, true);
     }
 
     /**
      * Collect payment information from order
      *
+     * @param Order $order
+     *
      * @return array|null
      */
-    protected function collectPaymentData()
+    protected function collectPaymentData(Order $order)
     {
         $projectID       = Configuration::get('PAYSERA_PROJECT_ID');
         $projectPassword = Configuration::get('PAYSERA_PROJECT_PASSWORD');
         $testingMode     = Configuration::get('PAYSERA_TESTING_MODE');
 
-        $cart     = $this->context->cart;
-        $order    = Order::getByCartId($cart->id);
+        $customer = $this->context->customer;
+
+        $cart     = new Cart($order->id_cart);
         $currency = new Currency($order->id_currency);
         $address  = new Address($order->id_address_invoice);
         $country  = new Country($address->id_country);
         $state    = new State($address->id_state);
-        $customer = $this->context->customer;
 
         $urlParams = ['id_order' => $order->id];
 
@@ -62,7 +74,7 @@ class PayseraRedirectModuleFrontController extends ModuleFrontController
             'projectid'     => $projectID,
             'sign_password' => $projectPassword,
             'orderid'       => $order->id,
-            'amount'        => $cart->getOrderTotal() * 100,
+            'amount'        => $cart->getOrderTotal() * Paysera::PRICE_MULTIPLIER,
             'currency'      => $currency->iso_code,
             'country'       => strtoupper($country->iso_code),
             'accepturl'     => $this->context->link->getModuleLink($this->module->name, 'accept', $urlParams),
@@ -91,9 +103,9 @@ class PayseraRedirectModuleFrontController extends ModuleFrontController
      */
     protected function getPayseraLangCode()
     {
-        $langISO = $this->context->language->iso_code;
+        $langIso = $this->context->language->iso_code;
 
-        switch ($langISO) {
+        switch ($langIso) {
             case 'lt':
                 return 'LIT';
             case 'lv':

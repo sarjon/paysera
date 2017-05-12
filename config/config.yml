@@ -2,6 +2,8 @@ imports:
     - { resource: 'services.yml' }
 
 parameters:
+    supported_languages: ['lt', 'en', 'ru', 'lv', 'ee', 'et', 'pl', 'bg']
+
     module_settings:
         configuration:
             PAYSERA_PROJECT_ID: 123456

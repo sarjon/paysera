@@ -20,6 +20,14 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 class Paysera extends PaymentModule
 {
     /**
+     * Since Paysera accepts all prices in cents,
+     * we need to multiply each price by defined value.
+     *
+     * @var int
+     */
+    const PRICE_MULTIPLIER = 100;
+
+    /**
      * Paysera payment constants
      */
     const PAYMENT_NOT_EXECUTED = 0;
@@ -45,11 +53,11 @@ class Paysera extends PaymentModule
 
         parent::__construct();
 
+        $this->autoload();
+        $this->compile();
+
         $this->displayName = $this->l('Paysera');
         $this->description = $this->l('Accept payments by Paysera system.');
-
-        $this->autoload();
-        $this->buildContainer();
     }
 
     /**
@@ -122,6 +130,10 @@ class Paysera extends PaymentModule
      */
     public function hookPaymentOptions()
     {
+        if (!$this->areCredentialsNonEmpty()) {
+            return [];
+        }
+
         $payseraOption = new PaymentOption();
         $payseraOption->setCallToActionText($this->l('Pay by Paysera'));
         $payseraOption->setAction($this->context->link->getModuleLink($this->name, 'validation'));
@@ -130,11 +142,12 @@ class Paysera extends PaymentModule
         if ($displayPaymentMethods) {
             $projectID = Configuration::get('PAYSERA_PROJECT_ID');
             $defaultCountry = Configuration::get('PAYSERA_DEFAULT_COUNTRY');
+            $supportedLangs = $this->container->getParameter('supported_languages');
 
             $currencyISO = $this->context->currency->iso_code;
-            $amount = $this->context->cart->getOrderTotal() * 100;
+            $amount = $this->context->cart->getOrderTotal() * self::PRICE_MULTIPLIER;
             $langIso = strtolower($this->context->language->iso_code);
-            $langIso = in_array($langIso, ['lt', 'en', 'ru', 'lv', 'ee', 'et', 'pl', 'bg']) ? $langIso : 'en';
+            $langIso = in_array($langIso, $supportedLangs) ? $langIso : 'en';
 
             $methods = WebToPay::getPaymentMethodList($projectID, $currencyISO)
                 ->filterForAmount($amount, $currencyISO)
@@ -162,7 +175,7 @@ class Paysera extends PaymentModule
 
     public function hookPaymentReturn(array $params)
     {
-        //@todo: implement
+        //@todo: implement or remove
     }
 
     /**
@@ -172,10 +185,10 @@ class Paysera extends PaymentModule
      */
     public function checkCurrency()
     {
-        $idCurrency = $this->context->cart->id_currency;
+        $idCurrentCurrency = $this->context->cart->id_currency;
 
-        $currency = new Currency($idCurrency);
-        $moduleCurrencies = $this->getCurrency($idCurrency);
+        $currency = new Currency($idCurrentCurrency);
+        $moduleCurrencies = $this->getCurrency($idCurrentCurrency);
 
         if (is_array($moduleCurrencies)) {
             foreach ($moduleCurrencies as $moduleCurrency) {
@@ -189,9 +202,22 @@ class Paysera extends PaymentModule
     }
 
     /**
+     * Check if merchant has configured it's credentials
+     *
+     * @return bool
+     */
+    protected function areCredentialsNonEmpty()
+    {
+        $projectID = Configuration::get('PAYSERA_PROJECT_ID');
+        $projectPassword = Configuration::get('PAYSERA_PROJECT_PASSWORD');
+
+        return !empty($projectID) && !empty($projectPassword);
+    }
+
+    /**
      * Build module service contaienr
      */
-    private function buildContainer()
+    private function compile()
     {
         $this->container = new ContainerBuilder();
         $this->container->addCompilerPass(new LegacyCompilerPass());
@@ -210,6 +236,6 @@ class Paysera extends PaymentModule
      */
     private function autoload()
     {
-        require_once __DIR__.'/vendor/autoload.php';
+        require_once $this->getLocalPath().'vendor/autoload.php';
     }
 }

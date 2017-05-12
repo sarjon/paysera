@@ -11,10 +11,6 @@
 
 class PayseraValidationModuleFrontController extends ModuleFrontController
 {
-    public $auth = true;
-
-    public $ssl = true;
-
     /**
      * @var Paysera
      */
@@ -25,68 +21,19 @@ class PayseraValidationModuleFrontController extends ModuleFrontController
      */
     public function postProcess()
     {
-        $this->processValidations();
-
         $cart = $this->context->cart;
 
-        try {
-            $orderValidation = $this->module->validateOrder(
-                $cart->id,
-                (int) Configuration::get('PAYSERA_AWAITING_PAYMENT_ORDER_STATE_ID'),
-                $cart->getOrderTotal(),
-                $this->module->displayName,
-                null,
-                [],
-                $cart->id_currency,
-                false,
-                $this->context->customer->secure_key
-            );
-        } catch (Exception $e) {
-            $orderValidation = false;
-        }
-
-        if (!$orderValidation) {
-            Tools::redirect($this->context->link->getPageLink('order'));
-        }
-
-        $order = Order::getByCartId($cart->id);
-
-        $params = [
-            'id_cart' => $order->id_cart,
-            'id_module' => $this->module->id,
-            'id_order' => $order->id,
-            'key' => $this->context->customer->secure_key,
-        ];
-
-        Tools::redirect(
-            $this->context->link->getPageLink('order-confirmation', null, $this->context->language->id, $params)
-        );
-    }
-
-    /**
-     * Process validations (cart, module, currencies and etc.)
-     */
-    protected function processValidations()
-    {
-        $cart = $this->context->cart;
-
-        if ($cart->id_customer == 0 ||
-            $cart->id_address_delivery == 0 ||
-            $cart->id_address_invoice == 0
+        if (0 == $cart->id_customer ||
+            0 == $cart->id_address_delivery ||
+            0 == $cart->id_address_invoice ||
+            !$this->module->active
         ) {
-            Tools::redirect($this->context->link->getPageLink('order'));
-        }
-
-        if (!$this->module->active ||
-            !$this->module->checkCurrency()
-        ) {
-            Tools::redirect($this->context->link->getPageLink('order'));
+            $this->setRedirectAfter($this->context->link->getPageLink('order'));
+            $this->redirect();
         }
 
         $authorized = false;
-        $paymentModules = Module::getPaymentModules();
-
-        foreach ($paymentModules as $module) {
+        foreach (Module::getPaymentModules() as $module) {
             if ($module['name'] == $this->module->name) {
                 $authorized = true;
                 break;
@@ -94,13 +41,46 @@ class PayseraValidationModuleFrontController extends ModuleFrontController
         }
 
         if (!$authorized) {
-            $this->errors[] = $this->module->l('This payment method is not available.', 'redirect');
+            $this->errors[] = $this->module->l('This payment method is not available.', 'validation');
             $this->redirectWithNotifications($this->context->link->getPageLink('order'));
         }
 
+        $idOrder = $this->processOrderCreate();
+
+        $this->setRedirectAfter(
+            $this->context->link->getModuleLink($this->module->name, 'redirect', ['id_order' => $idOrder])
+        );
+    }
+
+    /**
+     * Create order
+     *
+     * @return int
+     */
+    protected function processOrderCreate()
+    {
+        $cart     = $this->context->cart;
         $customer = new Customer($cart->id_customer);
-        if (!Validate::isLoadedObject($customer)) {
-            Tools::redirect($this->context->link->getPageLink('order'));
-        }
+        $currency = $this->context->currency;
+        $total    = (float) $cart->getOrderTotal();
+        $idCart   = $cart->id;
+
+        $idAwaitingOrderState = (int) Configuration::get('PAYSERA_AWAITING_PAYMENT_ORDER_STATE_ID');
+
+        $this->module->validateOrder(
+            $idCart,
+            $idAwaitingOrderState,
+            $total,
+            $this->module->displayName,
+            null,
+            array(),
+            $currency->id,
+            false,
+            $customer->secure_key
+        );
+
+        $idOrder = (int) Order::getIdByCartId($idCart);
+
+        return $idOrder;
     }
 }
