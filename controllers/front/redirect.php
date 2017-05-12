@@ -74,7 +74,7 @@ class PayseraRedirectModuleFrontController extends ModuleFrontController
             'projectid'     => $projectID,
             'sign_password' => $projectPassword,
             'orderid'       => $order->id,
-            'amount'        => $cart->getOrderTotal() * Paysera::PRICE_MULTIPLIER,
+            'amount'        => $this->module->getPayAmmountInCents($cart),
             'currency'      => $currency->iso_code,
             'country'       => strtoupper($country->iso_code),
             'accepturl'     => $this->context->link->getModuleLink($this->module->name, 'accept', $urlParams),

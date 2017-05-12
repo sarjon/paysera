@@ -145,7 +145,7 @@ class Paysera extends PaymentModule
             $supportedLangs = $this->container->getParameter('supported_languages');
 
             $currencyISO = $this->context->currency->iso_code;
-            $amount = $this->context->cart->getOrderTotal() * self::PRICE_MULTIPLIER;
+            $amount = $this->getPayAmmountInCents($this->context->cart);
             $langIso = strtolower($this->context->language->iso_code);
             $langIso = in_array($langIso, $supportedLangs) ? $langIso : 'en';
 
@@ -199,6 +199,18 @@ class Paysera extends PaymentModule
         }
 
         return false;
+    }
+
+    /**
+     * Get pay amount in cents
+     *
+     * @param Cart $cart
+     *
+     * @return int
+     */
+    public function getPayAmmountInCents(Cart $cart)
+    {
+        return (int) $cart->getOrderTotal() * self::PRICE_MULTIPLIER;
     }
 
     /**

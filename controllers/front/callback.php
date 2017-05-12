@@ -11,14 +11,19 @@
 
 class PayseraCallbackModuleFrontController extends ModuleFrontController
 {
+    /**
+     * @var Paysera
+     */
+    public $module;
+
     public function postProcess()
     {
         if (!$this->module->active) {
             exit;
         }
 
-        $projectID         = Configuration::get('PAYSERA_PROJECT_ID');
-        $projectPassword   = Configuration::get('PAYSERA_PROJECT_PASSWORD');
+        $projectID = Configuration::get('PAYSERA_PROJECT_ID');
+        $projectPassword = Configuration::get('PAYSERA_PROJECT_PASSWORD');
         $paymentAcceptedOrderStateID = (int) Configuration::get('PAYSERA_PAYMENT_ACCEPTED_ORDER_STATE_ID');
 
         try {
@@ -34,7 +39,8 @@ class PayseraCallbackModuleFrontController extends ModuleFrontController
                     exit('OK');
                 }
 
-                $orderAmount = (int) $order->getOrdersTotalPaid() * 100;
+                $cart = new Cart($order->id_cart);
+                $orderAmount = $this->module->getPayAmmountInCents($cart);
                 $orderCurrency = Currency::getCurrency($order->id_currency);
 
                 if ($responseAmount < $orderAmount) {
