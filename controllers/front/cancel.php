@@ -13,19 +13,18 @@ class PayseraCancelModuleFrontController extends ModuleFrontController
 {
     public function postProcess()
     {
-        if (!$this->module->active) {
-            Tools::redirect($this->context->link->getPageLink('index'));
-        }
-
         $idOrder = (int) Tools::getValue('id_order');
 
         $order = new Order($idOrder);
         $customer = $this->context->customer;
 
-        if (!Validate::isLoadedObject($customer) ||
-            !Validate::isLoadedObject($order)
+        if (!Validate::isLoadedObject($order) ||
+            $order->id_customer != $customer->id ||
+            $order->module != $this->module->name ||
+            !$this->module->active
         ) {
-            Tools::redirect($this->context->link->getPageLink('index'));
+            $this->setRedirectAfter('404');
+            return;
         }
 
         $params = [
@@ -35,8 +34,11 @@ class PayseraCancelModuleFrontController extends ModuleFrontController
             'key' => $customer->secure_key,
         ];
 
+        $idLang = $this->context->language->id;
+        $redirectUrl = $this->context->link->getPageLink('order-confirmation', true, $idLang, $params);
+
         $this->errors[] = $this->l('Payment has been canceled', 'cancel');
 
-        $this->redirectWithNotifications($this->context->link->getPageLink('order-confirmation', null, null, $params));
+        $this->redirectWithNotifications($redirectUrl);
     }
 }

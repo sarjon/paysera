@@ -13,19 +13,18 @@ class PayseraAcceptModuleFrontController extends ModuleFrontController
 {
     public function postProcess()
     {
-        if (!$this->module->active) {
-            Tools::redirect($this->context->link->getPageLink('index'));
-        }
-
         $idOrder = (int) Tools::getValue('id_order');
 
         $order = new Order($idOrder);
         $customer = $this->context->customer;
 
-        if (!Validate::isLoadedObject($customer) ||
-            !Validate::isLoadedObject($order)
+        if (!Validate::isLoadedObject($order) ||
+            $order->id_customer != $customer->id ||
+            $order->module != $this->module->name ||
+            !$this->module->active
         ) {
-            Tools::redirect($this->context->link->getPageLink('index'));
+            $this->setRedirectAfter('404');
+            return;
         }
 
         $params = [
@@ -35,6 +34,10 @@ class PayseraAcceptModuleFrontController extends ModuleFrontController
             'key' => $customer->secure_key,
         ];
 
-        Tools::redirect($this->context->link->getPageLink('order-confirmation', null, null, $params));
+        $idLang = $this->context->language->id;
+
+        $this->setRedirectAfter(
+            $this->context->link->getPageLink('order-confirmation', true, $idLang, $params)
+        );
     }
 }
