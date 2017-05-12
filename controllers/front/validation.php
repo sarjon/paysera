@@ -47,8 +47,17 @@ class PayseraValidationModuleFrontController extends ModuleFrontController
 
         $idOrder = $this->processOrderCreate();
 
+        $params = [
+            'id_order' => $idOrder,
+        ];
+
+        $paymentMethod = Tools::getValue('paysera_payment_method');
+        if ($paymentMethod) {
+            $params['payment_method'] = $paymentMethod;
+        }
+
         $this->setRedirectAfter(
-            $this->context->link->getModuleLink($this->module->name, 'redirect', ['id_order' => $idOrder])
+            $this->context->link->getModuleLink($this->module->name, 'redirect', $params)
         );
     }
 

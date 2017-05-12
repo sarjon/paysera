@@ -81,7 +81,7 @@ class PayseraRedirectModuleFrontController extends ModuleFrontController
             'cancelurl'     => $this->context->link->getModuleLink($this->module->name, 'cancel', $urlParams),
             'callbackurl'   => $this->context->link->getModuleLink($this->module->name, 'callback'),
             'test'          => (int) $testingMode,
-            'payment'       => Tools::getValue('paysera_payment_method'),
+            'payment'       => Tools::getValue('payment_method'),
             'p_firstname'   => $customer->firstname,
             'p_lastname'    => $customer->lastname,
             'p_email'       => $customer->email,

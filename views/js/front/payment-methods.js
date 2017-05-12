@@ -9,20 +9,22 @@
  */
 
 $(document).ready(function() {
-    $('.js-paysera-payment-country').on('change', togglePaymentMethods);
-    $('.js-paysera-payment-method').on('change', togglePaymentMethod);
+    var $checkoutPaymentStep = $('#checkout-payment-step');
+
+    $checkoutPaymentStep.find('.js-paysera-payment-country').on('change', togglePaymentMethods);
+    $checkoutPaymentStep.find('.js-paysera-payment-method').on('change', togglePaymentMethod);
 
     /**
      * Toggle payment methods when country is changed
      *
      * @param event
      */
-    function togglePaymentMethods(event)
+    function togglePaymentMethods()
     {
-        var value = event.target.value;
+        var selectedCountry = $(this).val();
 
-        $('.js-paysera-payment-methods').hide();
-        $('#payseraPaymentMethods_' + value).show();
+        $checkoutPaymentStep.find('.js-paysera-payment-methods').hide();
+        $checkoutPaymentStep.find('#payseraPaymentMethods_' + selectedCountry).show();
     }
 
     /**
@@ -30,8 +32,10 @@ $(document).ready(function() {
      *
      * @param event
      */
-    function togglePaymentMethod(event)
+    function togglePaymentMethod()
     {
-        $('input[name="paysera_payment_method"]').val(event.target.value);
+        var selectedPaymentMethod = $(this).val();
+
+        $checkoutPaymentStep.find('input[name="paysera_payment_method"]').val(selectedPaymentMethod);
     }
 });
