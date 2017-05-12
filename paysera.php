@@ -128,17 +128,17 @@ class Paysera extends PaymentModule
 
         $displayPaymentMethods = (bool) Configuration::get('PAYSERA_DISPLAY_PAYMENT_METHODS');
         if ($displayPaymentMethods) {
-            $projectID        = Configuration::get('PAYSERA_PROJECT_ID');
-            $defaultCountry   = Configuration::get('PAYSERA_DEFAULT_COUNTRY');
+            $projectID = Configuration::get('PAYSERA_PROJECT_ID');
+            $defaultCountry = Configuration::get('PAYSERA_DEFAULT_COUNTRY');
 
             $currencyISO = $this->context->currency->iso_code;
-            $amount      = $this->context->cart->getOrderTotal() * 100;
-            $langISO     = strtolower($this->context->language->iso_code);
-            $langISO     = in_array($langISO, ['lt', 'en', 'ru', 'lv', 'ee', 'et', 'pl', 'bg']) ? $langISO : 'en';
+            $amount = $this->context->cart->getOrderTotal() * 100;
+            $langIso = strtolower($this->context->language->iso_code);
+            $langIso = in_array($langIso, ['lt', 'en', 'ru', 'lv', 'ee', 'et', 'pl', 'bg']) ? $langIso : 'en';
 
             $methods = WebToPay::getPaymentMethodList($projectID, $currencyISO)
                 ->filterForAmount($amount, $currencyISO)
-                ->setDefaultLanguage($langISO)
+                ->setDefaultLanguage($langIso)
                 ->getCountries();
 
             $this->context->smarty->assign([
