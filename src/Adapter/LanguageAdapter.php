@@ -22,7 +22,7 @@ class LanguageAdapter
      * Get array of language IDs
      *
      * @param bool $active
-     * @param int $idShop
+     * @param int|bool $idShop
      *
      * @return array|int[]
      */
