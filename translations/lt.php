@@ -18,4 +18,4 @@ $_MODULE['<{paysera}prestashop>cancel_444bd3641b9dc3a440e2ec45be689dc7'] = 'Mok�
 $_MODULE['<{paysera}prestashop>validation_e2b7dec8fa4b498156dfee6e4c84b156'] = 'Šis mokėjimo būdas nėra galimas';
 $_MODULE['<{paysera}prestashop>payment-options_48034ce5085e9fd93c65ce59966acf9e'] = 'Pasirinkite mokėjimo šalį';
 $_MODULE['<{paysera}prestashop>payment-options_cdfc09d94f2116216fc3aae9cfa2c095'] = 'Mokėjimo šalis';
-$_MODULE['<{paysera}prestashop>payment-return_6d952efb799b6d822438bc3f8f521e68'] = 'Pereiti prie apmokėjimo naudojant Paysera';
+$_MODULE['<{paysera}prestashop>display-order-detail_6d952efb799b6d822438bc3f8f521e68'] = 'Pereiti prie apmokėjimo naudojant Paysera';
