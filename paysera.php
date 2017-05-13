@@ -173,9 +173,34 @@ class Paysera extends PaymentModule
         return [$payseraOption];
     }
 
-    public function hookPaymentReturn(array $params)
+    /**
+     * Display payment content if order is not paid
+     *
+     * @param array $params
+     *
+     * @return string
+     */
+    public function hookDisplayOrderDetail(array $params)
     {
-        //@todo: implement or remove
+        /** @var Order $order */
+        $order = $params['order'];
+        $customer = $this->context->customer;
+
+        if (!$this->active || $order->module != $this->name || $order->id_customer != $customer->id) {
+            return '';
+        }
+
+        if ($order->hasBeenPaid()) {
+            return '';
+        }
+
+        $paymentRedirectUrl = $this->context->link->getModuleLink($this->name, 'redirect', ['id_order' => $order->id]);
+
+        $this->context->smarty->assign([
+            'paymentRedirectUrl' => $paymentRedirectUrl,
+        ]);
+
+        return $this->context->smarty->fetch('module:paysera/views/templates/hook/display-order-detail.tpl');
     }
 
     /**
