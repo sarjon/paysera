@@ -3,6 +3,8 @@ imports:
 
 parameters:
     supported_languages: ['lt', 'en', 'ru', 'lv', 'ee', 'et', 'pl', 'bg']
+    default_language: 'en'
+    widget_js: 'https://bank.paysera.com/new/js/project/wtpQualitySigns.js'
 
     module_settings:
         configuration:
@@ -11,6 +13,9 @@ parameters:
             PAYSERA_TESTING_MODE: 1
             PAYSERA_DISPLAY_PAYMENT_METHODS: 1
             PAYSERA_DEFAULT_COUNTRY: 'lt'
+            PAYSERA_DISPLAY_WIDGET: 0
+            PAYSERA_INCLUDE_VERIFICATION: 0
+            PAYSERA_VERIFICATION_CODE: ''
             PAYSERA_AWAITING_PAYMENT_ORDER_STATE_ID: ~
             PAYSERA_PAYMENT_ACCEPTED_ORDER_STATE_ID: ~
 
@@ -26,3 +31,4 @@ parameters:
             - 'paymentOptions'
             - 'displayOrderDetail'
             - 'actionFrontControllerSetMedia'
+            - 'header'

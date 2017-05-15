@@ -99,6 +99,43 @@ class AdminPayseraConfigurationController extends ModuleAdminController
                     'title' => $this->l('Save'),
                 ],
             ],
+            'paysera_verification_configuration' => [
+                'title' => $this->l('Website ownership verification'),
+                'fields' => [
+                    'PAYSERA_INCLUDE_VERIFICATION' => [
+                        'title' => $this->l('Include verification content'),
+                        'validation' => 'isBool',
+                        'type' => 'bool',
+                        'cast' => 'intval',
+                        'class' => 'fixed-width-xxl',
+                    ],
+                    'PAYSERA_VERIFICATION_CODE' => [
+                        'title' => $this->l('Verification code'),
+                        'hint' => $this->l('Your website verification code'),
+                        'desc' => sprintf($this->l('Example code: %s'), '00adfe1398d874f6f945aee15501d0f1'),
+                        'type' => 'text',
+                        'class' => 'fixed-width-xxl',
+                    ],
+                ],
+                'submit' => [
+                    'title' => $this->l('Save'),
+                ],
+            ],
+            'paysera_additional_configuration' => [
+                'title' => $this->l('Paysera additional configuration'),
+                'fields' => [
+                    'PAYSERA_DISPLAY_WIDGET' => [
+                        'title' => $this->l('Display Paysera sign of quality'),
+                        'hint' => $this->l('Display Paysera sign of quality in Front Office pages.'),
+                        'validation' => 'isBool',
+                        'type' => 'bool',
+                        'cast' => 'intval',
+                    ],
+                ],
+                'submit' => [
+                    'title' => $this->l('Save'),
+                ],
+            ],
         ];
     }
 

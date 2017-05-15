@@ -1,0 +1,1 @@
+<meta name="verify-paysera" content="{$verificationCode}">

@@ -105,6 +105,24 @@ class Paysera extends PaymentModule
     }
 
     /**
+     * Add custom content to header
+     *
+     * @return string
+     */
+    public function hookHeader()
+    {
+        $includeVerificationContent = (bool) Configuration::get('PAYSERA_INCLUDE_VERIFICATION');
+        if ($includeVerificationContent) {
+            $verificationCode = Configuration::get('PAYSERA_VERIFICATION_CODE');
+            $this->context->smarty->assign('verificationCode', $verificationCode);
+
+            return $this->context->smarty->fetch('module:paysera/views/templates/hook/header.tpl');
+        }
+
+        return '';
+    }
+
+    /**
      * Add JS & CSS to front controller
      */
     public function hookActionFrontControllerSetMedia()
@@ -116,10 +134,31 @@ class Paysera extends PaymentModule
             if ($displayPaymentMethods) {
                 $this->context->controller->registerJavascript(
                     sha1('modules-paysera-order'),
-                    'modules/paysera/views/js/front/payment-methods.js',
-                    ['media' => 'all']
+                    'modules/paysera/views/js/front/payment-methods.js'
                 );
             }
+        }
+
+        $displayWidget = (bool) Configuration::get('PAYSERA_DISPLAY_WIDGET');
+        if ($displayWidget) {
+            $projectId = Configuration::get('PAYSERA_PROJECT_ID');
+            $langIso = $this->context->language->iso_code;
+
+            $defaultLang = $this->container->getParameter('default_language');
+            $supportedLangs = $this->container->getParameter('supported_languages');
+
+            $jsParams = [
+                'wtpQualitySign_projectId' => $projectId,
+                'wtpQualitySign_language' => in_array($langIso, $supportedLangs) ? $langIso : $defaultLang,
+            ];
+
+            Media::addJsDef($jsParams);
+
+            $this->context->controller->registerJavascript(
+                sha1('modules-paysera-widget'),
+                $this->container->getParameter('widget_js'),
+                ['server' => 'remote']
+            );
         }
     }
 
