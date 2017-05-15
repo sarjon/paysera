@@ -31,8 +31,8 @@ class PayseraCallbackModuleFrontController extends ModuleFrontController
 
             if (Paysera::PAYMENT_ACCEPTED == $response['status']) {
                 $idOrder = $response['orderid'];
-                $responseAmount = (int) $response['payamount'];
-                $responseCurrency = $response['paycurrency'];
+                $responseAmount = (int) $response['amount'];
+                $responseCurrency = $response['currency'];
 
                 $order = new Order($idOrder);
                 if ($order->hasBeenPaid()) {
