@@ -275,7 +275,7 @@ class Paysera extends PaymentModule
     public function getPayAmmountInCents(Cart $cart)
     {
         $total = $cart->getOrderTotal();
-        $amount = $total * self::PRICE_MULTIPLIER;
+        $amount = (float) (string) ($total * self::PRICE_MULTIPLIER);
 
         return $amount;
     }

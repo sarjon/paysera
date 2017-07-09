@@ -25,7 +25,6 @@ parameters:
             - { name: 'Paysera', class_name: 'AdminPayseraConfiguration', ParentClassName: 'AdminParentPayment' }
 
         hooks:
-            - 'moduleRoutes'
             - 'paymentOptions'
             - 'displayOrderDetail'
             - 'actionFrontControllerSetMedia'
