@@ -10,7 +10,7 @@ parameters:
         configuration:
             PAYSERA_PROJECT_ID: 123456
             PAYSERA_PROJECT_PASSWORD: ''
-            PAYSERA_TESTING_MODE: 1
+            PAYSERA_TEST_MODE: 1
             PAYSERA_DISPLAY_PAYMENT_METHODS: 1
             PAYSERA_DEFAULT_COUNTRY: 'lt'
             PAYSERA_DISPLAY_WIDGET: 0

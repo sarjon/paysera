@@ -58,7 +58,7 @@ class PayseraRedirectModuleFrontController extends ModuleFrontController
     {
         $projectID       = Configuration::get('PAYSERA_PROJECT_ID');
         $projectPassword = Configuration::get('PAYSERA_PROJECT_PASSWORD');
-        $testingMode     = Configuration::get('PAYSERA_TESTING_MODE');
+        $testingMode     = Configuration::get('PAYSERA_TEST_MODE');
 
         $customer = $this->context->customer;
 
