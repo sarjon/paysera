@@ -22,7 +22,7 @@ $_MODULE['<{paysera}prestashop>adminpayseraconfigurationcontroller_241683f6cb80f
 $_MODULE['<{paysera}prestashop>adminpayseraconfigurationcontroller_5f8cf14f385c3de02e142214ae9c434d'] = 'Paysera papildoma konfigūracija';
 $_MODULE['<{paysera}prestashop>adminpayseraconfigurationcontroller_dcb694c2c7d4f08d42c8d115b5d611fb'] = 'Rodyti Paysera kokybės ženklą';
 $_MODULE['<{paysera}prestashop>adminpayseraconfigurationcontroller_369a82d4f81dbb44f8b27d5a773c3217'] = 'Rodyti Paysera kokybės ženklą svetainės puslapiuose';
-$_MODULE['<{paysera}prestashop>cancel_444bd3641b9dc3a440e2ec45be689dc7'] = 'Mokėjimas atšauktas';
+$_MODULE['<{paysera}prestashop>cancel_2d863b160b13f3f205ea789288be80a4'] = 'Mokėjimas atšauktas. Mokėjimą galite atlikti vėliau nuėję į užsakymų istoriją.';
 $_MODULE['<{paysera}prestashop>validation_e2b7dec8fa4b498156dfee6e4c84b156'] = 'Šis mokėjimo būdas nėra galimas';
 $_MODULE['<{paysera}prestashop>display-order-detail_6d952efb799b6d822438bc3f8f521e68'] = 'Pereiti prie apmokėjimo naudojant Paysera';
 $_MODULE['<{paysera}prestashop>payment-options_48034ce5085e9fd93c65ce59966acf9e'] = 'Pasirinkite mokėjimo šalį';

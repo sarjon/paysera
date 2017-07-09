@@ -37,7 +37,7 @@ class PayseraCancelModuleFrontController extends ModuleFrontController
         $idLang = $this->context->language->id;
         $redirectUrl = $this->context->link->getPageLink('order-confirmation', true, $idLang, $params);
 
-        $this->errors[] = $this->l('Payment has been canceled', 'cancel');
+        $this->errors[] = $this->l('Payment has been canceled. Go to order history to continue with payment.', 'cancel');
 
         $this->redirectWithNotifications($redirectUrl);
     }

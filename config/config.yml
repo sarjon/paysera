@@ -22,7 +22,8 @@ parameters:
             - { name: 'Awaiting Paysera payment', color: '#206f9f', paid: 0, config: 'PAYSERA_AWAITING_PAYMENT_ORDER_STATE_ID'}
 
         tabs:
-            - { name: 'Paysera', class_name: 'AdminPayseraConfiguration', ParentClassName: 'AdminParentPayment' }
+            # ParentClassName key for compatability with PS 1.7.1.x
+            - { name: 'Paysera', class_name: 'AdminPayseraConfiguration', parent_class_name: 'AdminParentPayment', ParentClassName: 'AdminParentPayment'}
 
         hooks:
             - 'paymentOptions'
