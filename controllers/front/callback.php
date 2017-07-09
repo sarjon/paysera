@@ -24,7 +24,7 @@ class PayseraCallbackModuleFrontController extends ModuleFrontController
 
         $projectID = Configuration::get('PAYSERA_PROJECT_ID');
         $projectPassword = Configuration::get('PAYSERA_PROJECT_PASSWORD');
-        $paymentAcceptedOrderStateID = (int) Configuration::get('PAYSERA_PAYMENT_ACCEPTED_ORDER_STATE_ID');
+        $paymentAcceptedOrderStateID = (int) Configuration::get('PS_OS_PAYMENT');
 
         try {
             $response = WebToPay::validateAndParseData($_GET, $projectID, $projectPassword);
@@ -43,7 +43,7 @@ class PayseraCallbackModuleFrontController extends ModuleFrontController
                 $orderAmount = $this->module->getPayAmmountInCents($cart);
                 $orderCurrency = Currency::getCurrency($order->id_currency);
 
-                if ($responseAmount < $orderAmount) {
+                if ($responseAmount != $orderAmount) {
                     exit;
                 }
 
